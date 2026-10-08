@@ -5,16 +5,20 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   decompile:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout PR head
+      - name: Checkout PR branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
 
-      - name: Rebuild exact core DLL
+      - name: Rebuild exact MASTER 09G core DLL
         shell: bash
         run: |
           mkdir -p work
@@ -30,13 +34,69 @@ jobs:
         shell: bash
         run: dotnet tool install --global ilspycmd --version 11.1.0.9782
 
-      - name: Decompile core
+      - name: Decompile exact core
         shell: bash
         run: |
+          rm -rf decompiled
           mkdir -p decompiled
           ~/.dotnet/tools/ilspycmd -p -o decompiled work/DF-AMP_Core.dll
 
-      - name: Upload decompiled source
+      - name: Archive decompiled core source in repository
+        shell: bash
+        run: |
+          mkdir -p src/Core
+          {
+            echo "// DF-AMP PLAYER"
+            echo "// Decompiled from the exact compiled core embedded in MASTER_DFAMP_09G_07_OCT_2026.zip."
+            echo "// Embedded core SHA-256: 01dd2d8df9900b8a4fe54ceb0698bd1ad00966e8e30fe11fccdc6803e7d7734a"
+            echo "// Original playback base: Dynamic Music by Numidium3rd / numidium (MIT)."
+            echo "// DF-AMP extended modifications: DF-AMP PLAYER BY RICO."
+            echo "// Decompiled source is semantically recovered source; original comments/format/local names may differ."
+            echo
+            cat decompiled/DynamicMusic/DynamicMusic.cs
+          } > src/Core/DynamicMusic.cs
+
+          {
+            echo "// DF-AMP PLAYER"
+            echo "// Decompiled from the exact compiled core embedded in MASTER_DFAMP_09G_07_OCT_2026.zip."
+            echo "// Embedded core SHA-256: 01dd2d8df9900b8a4fe54ceb0698bd1ad00966e8e30fe11fccdc6803e7d7734a"
+            echo "// Original playback base: Dynamic Music by Numidium3rd / numidium (MIT)."
+            echo "// DF-AMP extended modifications: DF-AMP PLAYER BY RICO."
+            echo "// Decompiled source is semantically recovered source; original comments/format/local names may differ."
+            echo
+            cat decompiled/DynamicMusic/DynamicSongPlayer.cs
+          } > src/Core/DynamicSongPlayer.cs
+
+          cat > src/Core/DECOMPILATION.md <<'EOF'
+          # MASTER 09G Core Source Recovery
+
+          These C# files were decompiled with ILSpy 11.1 from the exact .NET assembly embedded inside the validated `DF-AMP.dfmod` in `MASTER_DFAMP_09G_07_OCT_2026.zip`.
+
+          Embedded core assembly SHA-256:
+
+          `01dd2d8df9900b8a4fe54ceb0698bd1ad00966e8e30fe11fccdc6803e7d7734a`
+
+          The compiled assembly is the byte-level authority for MASTER 09G. The decompiled C# preserves program semantics, but original source formatting, comments, and some local variable names are not recoverable without the original source/PDB.
+
+          Original playback base: **Dynamic Music by Numidium3rd / numidium**, MIT licensed.
+
+          Extended project: **DF-AMP PLAYER BY RICO**.
+          EOF
+
+      - name: Commit recovered source to PR branch
+        shell: bash
+        run: |
+          git config user.name "DF-AMP archive bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add src/Core/DynamicMusic.cs src/Core/DynamicSongPlayer.cs src/Core/DECOMPILATION.md
+          if git diff --cached --quiet; then
+            echo "Recovered source already archived."
+          else
+            git commit -m "source: archive exact MASTER 09G decompiled core"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
+
+      - name: Upload decompiled project artifact
         uses: actions/upload-artifact@v4
         with:
           name: dfamp-core-decompiled
