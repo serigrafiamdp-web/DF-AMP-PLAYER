@@ -1,6 +1,6 @@
 # DF-AMP UI TEST 10 — ESC ONLY
 
-Status: **PENDING PASS/FAIL**
+Status: **PASS**
 
 Base: exact MASTER 09G PASS.
 
@@ -39,7 +39,7 @@ Test ZIP:
 
 ## Runtime validation
 
-Mark PASS only if all five checks succeed:
+Runtime validation passed for all five checks:
 
 1. ENTER performs its normal game function and never opens/closes DF-AMP.
 2. ESC opens the native menu and DF-AMP appears with it.
