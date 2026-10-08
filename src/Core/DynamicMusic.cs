@@ -399,7 +399,6 @@ public sealed class DynamicMusic : MonoBehaviour
 
 	private const string modSignature = "Dynamic Music";
 
-
 	public static DynamicMusic Instance { get; private set; }
 
 	[Invoke(/*Could not decode attribute arguments.*/)]
