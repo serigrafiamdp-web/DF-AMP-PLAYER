@@ -11,20 +11,35 @@ Original upstream source:
 
 ## Current MASTER 09G source
 
-The exact compiled .NET core embedded inside the validated `DF-AMP.dfmod` from **MASTER_DFAMP_09G_07_OCT_2026.zip** was extracted and independently verified.
+The exact compiled .NET core embedded in the validated `DF-AMP.dfmod` from
+**MASTER_DFAMP_09G_07_OCT_2026.zip** was extracted and verified before
+decompilation.
 
-Embedded core assembly SHA-256:
+Embedded core assembly:
 
-`01dd2d8df9900b8a4fe54ceb0698bd1ad00966e8e30fe11fccdc6803e7d7734a`
+- Size: **35,840 bytes**
+- SHA-256: `01dd2d8df9900b8a4fe54ceb0698bd1ad00966e8e30fe11fccdc6803e7d7734a`
 
-That exact assembly was decompiled with ILSpy 11.1 and its recovered C# is archived here:
+The exact PASS assembly payload is preserved losslessly as Base64 in:
 
-- `DynamicMusic.cs`
-- `DynamicSongPlayer.cs`
-- `DECOMPILATION.md`
+- `tools/core-full.b64`
 
-The compiled assembly remains the byte-level authority for MASTER 09G. Decompiled C# preserves program semantics, but original source comments, formatting, and some local variable names cannot be recovered without the original source/PDB.
+Its editable ILSpy reconstruction is preserved under:
 
-The untouched upstream Dynamic Music source is separately preserved under `upstream/DynamicMusic/` for provenance and comparison.
+- `src/Core/Decompiled/DynamicMusic/DynamicMusic.cs`
+- `src/Core/Decompiled/DynamicMusic/DynamicSongPlayer.cs`
+- `src/Core/Decompiled/DF-AMP_Core.csproj`
+- `src/Core/Decompiled/Properties/AssemblyInfo.cs`
+- `src/Core/Decompiled/DECOMPILED_FROM_MASTER_09G.md`
 
-Future DF-AMP source changes should be committed before building new runtime binaries.
+The compiled assembly remains the byte-level authority for MASTER 09G.
+Decompiled C# preserves program semantics, but original comments, formatting,
+and some local variable names cannot be recovered from a compiled assembly.
+
+The untouched upstream Dynamic Music source is separately preserved under
+`upstream/DynamicMusic/` for provenance and comparison.
+
+Extended project credit: **DF-AMP PLAYER BY RICO**.
+
+Future DF-AMP changes should branch from the latest validated PASS state and be
+committed as source before building a new runtime binary.

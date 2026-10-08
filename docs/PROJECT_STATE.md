@@ -12,15 +12,20 @@ Extended player project: **DF-AMP PLAYER BY RICO**.
 
 ## Source archival status
 
-The exact compiled core embedded in the current MASTER 09G `DF-AMP.dfmod` has been extracted, SHA-256 verified, and decompiled with ILSpy 11.1.
+The exact compiled core embedded in the current MASTER 09G `DF-AMP.dfmod`
+has been extracted and verified before decompilation.
 
+- Embedded core size: **35,840 bytes**
 - Embedded core SHA-256: `01dd2d8df9900b8a4fe54ceb0698bd1ad00966e8e30fe11fccdc6803e7d7734a`
-- Recovered core source: `src/Core/DynamicMusic.cs`
-- Recovered song-player source: `src/Core/DynamicSongPlayer.cs`
-- Recovery notes: `src/Core/DECOMPILATION.md`
-- Untouched upstream source remains preserved under `upstream/DynamicMusic/`
+- Lossless exact assembly payload: `tools/core-full.b64`
+- Recovered core source: `src/Core/Decompiled/DynamicMusic/DynamicMusic.cs`
+- Recovered song-player source: `src/Core/Decompiled/DynamicMusic/DynamicSongPlayer.cs`
+- Decompilation provenance: `src/Core/Decompiled/DECOMPILED_FROM_MASTER_09G.md`
+- Untouched upstream source: `upstream/DynamicMusic/`
 
-The compiled MASTER 09G core is the byte-level authority. Decompiled source is the semantic source archive because the original modified source/PDB was not present in the MASTER package.
+The compiled MASTER 09G core remains the byte-level authority. The decompiled
+source is the editable semantic archive of the exact PASS binary because the
+original modified C# source/PDB was not present in the MASTER package.
 
 ## Validated playback contract
 
