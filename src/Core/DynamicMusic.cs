@@ -1199,4 +1199,360 @@ public sealed class DynamicMusic : MonoBehaviour
 				case 1:
 				case 2:
 				case 3:
-__DFAMP_CONTINUE__
+				case 5:
+				case 6:
+				case 8:
+					musicEnvironment = MusicEnvironment.City;
+					break;
+				default:
+					musicEnvironment = MusicEnvironment.Wilderness;
+					break;
+				}
+			}
+			else
+			{
+				musicEnvironment = MusicEnvironment.Wilderness;
+			}
+		}
+		else if (playerEnterExit.IsPlayerInsideDungeon)
+		{
+			musicEnvironment = ((!playerEnterExit.IsPlayerInsideDungeonCastle) ? MusicEnvironment.DungeonInterior : MusicEnvironment.Castle);
+		}
+		else if (playerEnterExit.IsPlayerInside)
+		{
+			BuildingTypes buildingType = playerEnterExit.BuildingType;
+			switch ((int)buildingType)
+			{
+			case 0:
+			case 2:
+			case 3:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+			case 10:
+			case 12:
+			case 13:
+				musicEnvironment = MusicEnvironment.Shop;
+				break;
+			case 15:
+				musicEnvironment = MusicEnvironment.Tavern;
+				break;
+			case 11:
+				musicEnvironment = ((playerEnterExit.FactionID != 40) ? MusicEnvironment.Interior : MusicEnvironment.MagesGuild);
+				break;
+			case 16:
+				musicEnvironment = MusicEnvironment.Palace;
+				break;
+			case 14:
+				musicEnvironment = MusicEnvironment.Temple;
+				break;
+			default:
+				musicEnvironment = MusicEnvironment.Interior;
+				break;
+			}
+		}
+		switch (musicEnvironment)
+		{
+		case MusicEnvironment.City:
+		case MusicEnvironment.Wilderness:
+		{
+			if (instance.WorldTime.Now.IsNight)
+			{
+				return MusicPlaylist.Night;
+			}
+			WeatherType weatherType = playerWeather.WeatherType;
+			switch (weatherType - 1)
+			{
+			case 0:
+				return MusicPlaylist.Cloudy;
+			case 1:
+			case 2:
+				return MusicPlaylist.Overcast;
+			case 3:
+			case 4:
+				return MusicPlaylist.Rain;
+			case 5:
+				return MusicPlaylist.Snow;
+			default:
+				return MusicPlaylist.Sunny;
+			}
+		}
+		case MusicEnvironment.Castle:
+			return MusicPlaylist.Castle;
+		case MusicEnvironment.DungeonExterior:
+			return MusicPlaylist.Night;
+		case MusicEnvironment.DungeonInterior:
+			return MusicPlaylist.DungeonInterior;
+		case MusicEnvironment.Graveyard:
+			return MusicPlaylist.Night;
+		case MusicEnvironment.MagesGuild:
+			return MusicPlaylist.MagesGuild;
+		case MusicEnvironment.Interior:
+			return MusicPlaylist.Interior;
+		case MusicEnvironment.Palace:
+			return MusicPlaylist.Palace;
+		case MusicEnvironment.Shop:
+			return MusicPlaylist.Shop;
+		case MusicEnvironment.Tavern:
+			return MusicPlaylist.Tavern;
+		case MusicEnvironment.Temple:
+			return MusicPlaylist.Temple;
+		default:
+			return MusicPlaylist.None;
+		}
+	}
+
+	private SongFiles GetSong(MusicPlaylist musicPlaylist)
+	{
+		//IL_017f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0184: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0189: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018e: Unknown result type (might be due to invalid IL or missing references)
+		int num = 0;
+		SongFiles[] array = musicPlaylist switch
+		{
+			MusicPlaylist.Night => Instance.NightSongs, 
+			MusicPlaylist.Sunny => Instance.SunnySongs, 
+			MusicPlaylist.Cloudy => Instance.CloudySongs, 
+			MusicPlaylist.Overcast => Instance.OvercastSongs, 
+			MusicPlaylist.Rain => Instance.RainSongs, 
+			MusicPlaylist.Snow => Instance.SnowSongs, 
+			MusicPlaylist.Temple => Instance.TempleSongs, 
+			MusicPlaylist.Tavern => Instance.TavernSongs, 
+			MusicPlaylist.Shop => Instance.ShopSongs, 
+			MusicPlaylist.DungeonInterior => Instance.DungeonInteriorSongs, 
+			MusicPlaylist.MagesGuild => Instance.MagesGuildSongs, 
+			MusicPlaylist.Interior => Instance.InteriorSongs, 
+			MusicPlaylist.Palace => Instance.PalaceSongs, 
+			MusicPlaylist.Castle => Instance.CastleSongs, 
+			MusicPlaylist.Court => Instance.CourtSongs, 
+			_ => null, 
+		};
+		if (array == null)
+		{
+			lastVanillaPlaylist = MusicPlaylist.None;
+			return (SongFiles)(-1);
+		}
+		uint num2 = DaggerfallUnity.Instance.WorldTime.DaggerfallDateTime.ToClassicDaggerfallTime() / 1440;
+		if (array == TavernSongs)
+		{
+			num = (int)(num2 % array.Length);
+		}
+		else if (array == DungeonInteriorSongs)
+		{
+			PlayerGPS playerGPS = GameManager.Instance.PlayerGPS;
+			ushort num3 = 0;
+			int num4 = 0;
+			if (playerGPS.HasCurrentLocation)
+			{
+				num3 = (ushort)playerGPS.CurrentLocation.Dungeon.RecordElement.Header.Unknown2;
+				num4 = playerGPS.CurrentRegionIndex;
+			}
+			DFRandom.srand(num3 ^ ((byte)num4 << 8));
+			num = (int)(DFRandom.rand() % DungeonInteriorSongs.Length);
+		}
+		else if (array == SneakingSongs || array == MagesGuildSongs)
+		{
+			if (lastVanillaPlaylist != musicPlaylist)
+			{
+				num = Random.Range(0, array.Length);
+			}
+		}
+		else if (array.Length > 1)
+		{
+			DFRandom.srand(num2);
+			num = (int)(DFRandom.rand() % array.Length);
+		}
+		lastVanillaPlaylist = musicPlaylist;
+		return array[num];
+	}
+
+	private void GetDebuggingText(string track, out string playlistName, out string songName, bool isUserDefined)
+	{
+		string text = (isUserDefined ? " (User-Defined)" : "");
+		playlistName = Path.GetFileName(Path.GetDirectoryName(track)) + text;
+		songName = Path.GetFileName(track);
+	}
+
+	private void GetDebuggingText(SongFiles song, out string playlistName, out string songName)
+	{
+		playlistName = ((MusicPlaylist)currentPlaylist/*cast due to constrained. prefix*/).ToString();
+		songName = ((object)song/*cast due to constrained. prefix*/).ToString();
+	}
+
+	private bool GetCombatStatus(out int maxLevel)
+	{
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Invalid comparison between Unknown and I4
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Invalid comparison between Unknown and I4
+		bool result = false;
+		int num = 0;
+		DaggerfallEntityBehaviour[] array = Object.FindObjectsOfType<DaggerfallEntityBehaviour>();
+		foreach (DaggerfallEntityBehaviour val in array)
+		{
+			if ((int)val.EntityType != 4 && (int)val.EntityType != 5)
+			{
+				continue;
+			}
+			EnemySenses component = ((Component)val).GetComponent<EnemySenses>();
+			if (Object.op_Implicit((Object)(object)component) && (Object)(object)component.Target == (Object)(object)gameManager.PlayerEntityBehaviour && component.DetectedTarget && component.TargetInSight)
+			{
+				result = true;
+				if (val.Entity.Level > num)
+				{
+					num = val.Entity.Level;
+				}
+			}
+		}
+		maxLevel = num;
+		return result;
+	}
+
+	private void OnTransitionInterior(TransitionEventArgs args)
+	{
+		HandleLocationChange();
+	}
+
+	private void OnTransitionExterior(TransitionEventArgs args)
+	{
+		HandleLocationChange();
+	}
+
+	private void OnTransitionDungeonInterior(TransitionEventArgs args)
+	{
+		HandleLocationChange();
+	}
+
+	private void OnTransitionDungeonExterior(TransitionEventArgs args)
+	{
+		HandleLocationChange();
+	}
+
+	private static void SaveLoadManager_OnLoad(SaveData_v1 saveData)
+	{
+		Instance.HandleLocationChange();
+		Instance.isInCombat = false;
+		Instance.gameLoaded = true;
+	}
+
+	private static void StartGameBehaviour_OnStartGame(object sender, EventArgs e)
+	{
+		Instance.HandleLocationChange();
+		Instance.gameLoaded = true;
+	}
+
+	private static void OnPostFastTravel()
+	{
+		Instance.stingWaitTime = Instance.stingDelay;
+		Instance.isWaitingForTravelSting = true;
+	}
+
+	private static void OnSongEnd()
+	{
+		if (Instance.currentState == State.Normal)
+		{
+			Instance.isPlayingSting = false;
+		}
+	}
+
+	private void OnDeath(DaggerfallEntity entity)
+	{
+		combatTaper = 0;
+		currentState = State.FadingOut;
+		currentPlaylist = 17;
+		isInCombat = false;
+		gameLoaded = false;
+	}
+
+	static DynamicMusic()
+	{
+		SongFiles[] array = new SongFiles[15];
+		RuntimeHelpers.InitializeArray(array, __ldtoken(_003CPrivateImplementationDetails_003E.F5FB74840F133C18F5A8C4C0F7472D1E6000D0AF));
+		_dungeonSongs = array;
+		SongFiles[] array2 = new SongFiles[7];
+		RuntimeHelpers.InitializeArray(array2, __ldtoken(_003CPrivateImplementationDetails_003E._3B3803BB1DC9DEC2CD0569A4D4429B349E15E0B7));
+		_sunnySongs = array2;
+		SongFiles[] array3 = new SongFiles[6];
+		RuntimeHelpers.InitializeArray(array3, __ldtoken(_003CPrivateImplementationDetails_003E._45167FD7FCB55261214B6F47ABCD597A8D6D054F));
+		_sunnySongsFM = array3;
+		SongFiles[] array4 = new SongFiles[9];
+		RuntimeHelpers.InitializeArray(array4, __ldtoken(_003CPrivateImplementationDetails_003E._9FC93E25DDFDF5DA2E6F07771DDC4D0A1DB9B998));
+		_cloudySongs = array4;
+		SongFiles[] array5 = new SongFiles[8];
+		RuntimeHelpers.InitializeArray(array5, __ldtoken(_003CPrivateImplementationDetails_003E.B9B5FF9AA8D1D7BA71A3BB0609B682A816170925));
+		_cloudySongsFM = array5;
+		SongFiles[] array6 = new SongFiles[5];
+		RuntimeHelpers.InitializeArray(array6, __ldtoken(_003CPrivateImplementationDetails_003E.F664F12163DD525D6E390790533EFE381BD3D479));
+		_overcastSongs = array6;
+		SongFiles[] array7 = new SongFiles[5];
+		RuntimeHelpers.InitializeArray(array7, __ldtoken(_003CPrivateImplementationDetails_003E._363A1B0946894549D9069DCF08DEB58050982FD8));
+		_overcastSongsFM = array7;
+		SongFiles[] array8 = new SongFiles[3];
+		RuntimeHelpers.InitializeArray(array8, __ldtoken(_003CPrivateImplementationDetails_003E.B082D7A86480C429210D58A4E1342BC609694C71));
+		_rainSongs = array8;
+		SongFiles[] array9 = new SongFiles[4];
+		RuntimeHelpers.InitializeArray(array9, __ldtoken(_003CPrivateImplementationDetails_003E._30C8CD182C0155DB25A3483E13A1B1D627814A9F));
+		_snowSongs = array9;
+		SongFiles[] array10 = new SongFiles[7];
+		RuntimeHelpers.InitializeArray(array10, __ldtoken(_003CPrivateImplementationDetails_003E.C1A4C19B0A6E55437091FC358DA8B0AF6C345399));
+		_sneakingSongs = array10;
+		SongFiles[] array11 = new SongFiles[8];
+		RuntimeHelpers.InitializeArray(array11, __ldtoken(_003CPrivateImplementationDetails_003E._72156135623B06B42A554F0E7B3EFD579FEF109A));
+		_templeSongs = array11;
+		SongFiles[] array12 = new SongFiles[5];
+		RuntimeHelpers.InitializeArray(array12, __ldtoken(_003CPrivateImplementationDetails_003E._0C79AA6AD531CA4EB8EE745BA61B47F50C9ED00D));
+		_tavernSongs = array12;
+		SongFiles[] array13 = new SongFiles[7];
+		RuntimeHelpers.InitializeArray(array13, __ldtoken(_003CPrivateImplementationDetails_003E._3C9532F9684FD50C623C6B78883646B4FF58F6FD));
+		_nightSongs = array13;
+		SongFiles[] array14 = new SongFiles[15];
+		RuntimeHelpers.InitializeArray(array14, __ldtoken(_003CPrivateImplementationDetails_003E.F0FF116783AB356339962F9F7ED84EE10949BF2C));
+		_dungeonSongsFM = array14;
+		SongFiles[] array15 = new SongFiles[10];
+		RuntimeHelpers.InitializeArray(array15, __ldtoken(_003CPrivateImplementationDetails_003E._4782F5BDD3E99616BA24485470E0E63BDA6860F8));
+		_daySongsFM = array15;
+		SongFiles[] array16 = new SongFiles[3];
+		RuntimeHelpers.InitializeArray(array16, __ldtoken(_003CPrivateImplementationDetails_003E._904347A9D7EC39EE3C1BB492F220BF918550C002));
+		_weatherRainSongsFM = array16;
+		SongFiles[] array17 = new SongFiles[3];
+		RuntimeHelpers.InitializeArray(array17, __ldtoken(_003CPrivateImplementationDetails_003E._11418C9B023C754E622392E8409FA55A4F0EC4A3));
+		_weatherSnowSongsFM = array17;
+		SongFiles[] array18 = new SongFiles[7];
+		RuntimeHelpers.InitializeArray(array18, __ldtoken(_003CPrivateImplementationDetails_003E.C6D14D21C6F92B9CD838F062D5AEDB4ED9BC735B));
+		_sneakingSongsFM = array18;
+		SongFiles[] array19 = new SongFiles[8];
+		RuntimeHelpers.InitializeArray(array19, __ldtoken(_003CPrivateImplementationDetails_003E._8E9EC88F46F4C997EFE8A764855DBC54E5548751));
+		_templeSongsFM = array19;
+		_tavernSongsFM = new SongFiles[1] { (SongFiles)89 };
+		SongFiles[] array20 = new SongFiles[6];
+		RuntimeHelpers.InitializeArray(array20, __ldtoken(_003CPrivateImplementationDetails_003E._2CCF9D7338E566127ECDAF87A2CFB21C03826370));
+		_nightSongsFM = array20;
+		SongFiles[] array21 = new SongFiles[10];
+		RuntimeHelpers.InitializeArray(array21, __ldtoken(_003CPrivateImplementationDetails_003E._444D2417DA2C82E19171987AB2B2771E484F76E4));
+		_unusedDungeonSongs = array21;
+		SongFiles[] array22 = new SongFiles[10];
+		RuntimeHelpers.InitializeArray(array22, __ldtoken(_003CPrivateImplementationDetails_003E._543AB568362786A4A45D91DF28AEDBCB85CD4930));
+		_unusedDungeonSongsFM = array22;
+		_shopSongs = new SongFiles[1] { (SongFiles)116 };
+		_shopSongsFM = new SongFiles[1] { (SongFiles)89 };
+		_magesGuildSongs = new SongFiles[2]
+		{
+			(SongFiles)112,
+			(SongFiles)120
+		};
+		_magesGuildSongsFM = new SongFiles[1] { (SongFiles)87 };
+		_interiorSongs = new SongFiles[1] { (SongFiles)38 };
+		_interiorSongsFM = new SongFiles[1] { (SongFiles)39 };
+		_unusedKnightSong = new SongFiles[1] { (SongFiles)28 };
+		_unusedKnightSongFM = new SongFiles[1] { (SongFiles)29 };
+		_palaceSongs = new SongFiles[1] { (SongFiles)9 };
+		_palaceSongsFM = new SongFiles[1] { (SongFiles)10 };
+		_castleSongs = new SongFiles[1] { (SongFiles)114 };
+		_castleSongsFM = new SongFiles[1] { (SongFiles)99 };
+		_courtSongs = new SongFiles[1] { (SongFiles)18 };
+		_courtSongsFM = new SongFiles[1] { (SongFiles)19 };
+	}
+}
