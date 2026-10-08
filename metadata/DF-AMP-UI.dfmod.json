@@ -4,7 +4,7 @@
   "ModAuthor": "DF-AMP integration - based on Dynamic Music by numidium3rd",
   "ContactInfo": "Original Dynamic Music: https://www.nexusmods.com/daggerfallunity/mods/425",
   "DFUnity_Version": "1.1.1",
-  "ModDescription": "Native in-game DF-AMP interface test. ENTER toggles the bottom-center player while using Daggerfall Unity's own cursor. Based on Dynamic Music by numidium3rd.",
+  "ModDescription": "Native in-game DF-AMP interface. The player is shown only together with the ESC pause menu. ENTER remains available to Daggerfall Unity.",
   "GUID": "dfa0b002-6e8e-4d26-9c61-102620260002",
   "Files": [
     "Assets/Game/Mods/Decorator/Scripts/DecoratorManager.cs"
