@@ -399,4 +399,404 @@ public sealed class DynamicMusic : MonoBehaviour
 
 	private const string modSignature = "Dynamic Music";
 
+
+	public static DynamicMusic Instance { get; private set; }
+
+	[Invoke(/*Could not decode attribute arguments.*/)]
+	public static void Init(InitParams initParams)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Expected Obj, but got Unknown
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Expected Obj, but got Unknown
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Expected Obj, but got Unknown
+		mod = initParams.Mod;
+		GameObject val = new GameObject(mod.Title);
+		Instance = val.AddComponent<DynamicMusic>();
+		Instance.dynamicSongPlayer = val.AddComponent<DynamicSongPlayer>();
+		Instance.dynamicSongPlayer.ModSignature = "Dynamic Music";
+		Object.DontDestroyOnLoad((Object)(object)val);
+		SaveLoadManager.OnLoad += SaveLoadManager_OnLoad;
+		StartGameBehaviour.OnStartGame = (EventHandler)Delegate.Combine(StartGameBehaviour.OnStartGame, new EventHandler(StartGameBehaviour_OnStartGame));
+		DaggerfallTravelPopUp.OnPostFastTravel += OnPostFastTravel;
+		mod.LoadSettingsCallback = Instance.LoadSettings;
+		DynamicSongPlayer.OnSongEnd += OnSongEnd;
+	}
+
+	private void LoadSettings(ModSettings settings, ModSettingsChange change)
+	{
+		combatMusicIsEnabled = settings.GetValue<bool>("Options", "Enable Combat Music");
+		resumeIsEnabled = settings.GetValue<bool>("Options", "Enable Track Resume");
+		loopCustomTracks = settings.GetValue<bool>("Options", "Loop Custom Tracks");
+	}
+
+	private void Start()
+	{
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0472: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0496: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_060f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0619: Expected Obj, but got Unknown
+		//IL_0620: Unknown result type (might be due to invalid IL or missing references)
+		//IL_062a: Expected Obj, but got Unknown
+		//IL_0631: Unknown result type (might be due to invalid IL or missing references)
+		//IL_063b: Expected Obj, but got Unknown
+		//IL_0642: Unknown result type (might be due to invalid IL or missing references)
+		//IL_064c: Expected Obj, but got Unknown
+		//IL_0659: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0663: Expected Obj, but got Unknown
+		//IL_0664: Unknown result type (might be due to invalid IL or missing references)
+		//IL_066e: Expected Obj, but got Unknown
+		//IL_0679: Unknown result type (might be due to invalid IL or missing references)
+		daggerfallUnity = DaggerfallUnity.Instance;
+		ModSettings settings = mod.GetSettings();
+		LoadSettings(settings, default);
+		string text = Path.Combine(Application.streamingAssetsPath, "Sound", "DynMusic");
+		List<Playlist> list = new List<Playlist>();
+		string path = Path.Combine(text, "UserDefined.txt");
+		if (Directory.Exists(text) && File.Exists(path))
+		{
+			using StreamReader streamReader = new StreamReader(path);
+			userDefinedConditionSets = new Dictionary<int, ConditionUsage[]>();
+			ushort num = 0;
+			string text2;
+			while ((text2 = streamReader.ReadLine()) != null)
+			{
+				text2 = text2.Trim();
+				num++;
+				if (text2 == string.Empty || text2[0] == '#')
+				{
+					continue;
+				}
+				bool flag = false;
+				string[] array = null;
+				if (text2.Split(new char[1] { '|' }).Length > 1)
+				{
+					array = text2.Split(new char[1] { '|' })[1].Split(new char[2] { ' ', ',' });
+				}
+				string[] array2 = text2.Split(new char[1] { '|' })[0].Split(new char[2] { ' ', ',' });
+				string text3 = array2[0];
+				if (!Directory.Exists(Path.Combine(text, text3)))
+				{
+					PrintParserError("Reference to non-existent playlist directory", num, text3);
+					continue;
+				}
+				string[] files = Directory.GetFiles(Path.Combine(text, text3), "*.ogg");
+				List<string> list2 = new List<string>();
+				if (files.Length != 0)
+				{
+					string[] array3 = files;
+					foreach (string item in array3)
+					{
+						list2.Add(item);
+					}
+					list.Add(new Playlist(list2));
+				}
+				int key = 17 + list.Count;
+				List<ConditionUsage> list3 = new List<ConditionUsage>();
+				int num2;
+				for (num2 = 2; num2 < array2.Length; num2++)
+				{
+					bool negateArg = false;
+					if (array2[num2].ToLower() == "not")
+					{
+						num2++;
+						negateArg = true;
+					}
+					ConditionUsage.Conditions conditionFromText = ConditionUsage.GetConditionFromText(array2[num2]);
+					if (conditionFromText == ConditionUsage.Conditions.None)
+					{
+						PrintParserError("Unrecognized condition", num, array2[num2]);
+						flag = true;
+						break;
+					}
+					num2++;
+					if (!flag)
+					{
+						List<int> list4 = new List<int>();
+						while (num2 < array2.Length && array2[num2] != "")
+						{
+							if (!int.TryParse(array2[num2++], out var result))
+							{
+								PrintParserError("Invalid argument", num, conditionFromText.ToString());
+								flag = true;
+								break;
+							}
+							list4.Add(result);
+						}
+						ConditionUsage item2 = new ConditionUsage
+						{
+							NegateArg = negateArg,
+							ParameterArgs = list4.ToArray(),
+							Condition = conditionFromText
+						};
+						list3.Add(item2);
+					}
+				}
+				num2 = 0;
+				if (array != null)
+				{
+					while (num2 < array.Length)
+					{
+						list[list.Count - 1].PlaylistFlags |= Playlist.GetFlagsFromText(array[num2++]);
+					}
+				}
+				if (!flag)
+				{
+					userDefinedConditionSets[key] = list3.ToArray();
+				}
+			}
+		}
+		customPlaylists = new Playlist[17 + list.Count + 1];
+		for (int j = 0; j < 18; j++)
+		{
+			string path2 = Path.Combine(text, $"{(MusicPlaylist)j}");
+			if (!Directory.Exists(path2))
+			{
+				Directory.CreateDirectory(path2);
+				continue;
+			}
+			string[] files2 = Directory.GetFiles(path2, "*.ogg");
+			if (files2.Length != 0)
+			{
+				List<string> list5 = new List<string>();
+				string[] array3 = files2;
+				foreach (string item3 in array3)
+				{
+					list5.Add(item3);
+				}
+				customPlaylists[j] = new Playlist(list5);
+			}
+		}
+		int num3 = 0;
+		int num4 = 18;
+		while (num3 < list.Count)
+		{
+			customPlaylists[num4] = list[num3++];
+			num4++;
+		}
+		gameManager = GameManager.Instance;
+		Object.Destroy((Object)(object)((Component)gameManager.DungeonParent.transform.Find("SongPlayer")).gameObject);
+		Object.Destroy((Object)(object)((Component)gameManager.InteriorParent.transform.Find("SongPlayer")).gameObject);
+		Object.Destroy((Object)(object)((Component)gameManager.ExteriorParent.transform.Find("SongPlayer")).gameObject);
+		new GameObject("SongPlayer").transform.parent = gameManager.DungeonParent.transform;
+		new GameObject("SongPlayer").transform.parent = gameManager.InteriorParent.transform;
+		new GameObject("SongPlayer").transform.parent = gameManager.ExteriorParent.transform;
+		playerEntity = gameManager.PlayerEntity;
+		localPlayerGPS = gameManager.PlayerGPS;
+		playerEnterExit = ((Component)localPlayerGPS).GetComponent<PlayerEnterExit>();
+		playerWeather = ((Component)localPlayerGPS).GetComponent<PlayerWeather>();
+		previousTimeSinceStartup = Time.realtimeSinceStartup;
+		gameLoaded = false;
+		currentState = State.FadingIn;
+		fadeInTime = 2f;
+		currentPlaylist = 17;
+		if (DaggerfallUnity.Settings.AlternateMusic)
+		{
+			DungeonInteriorSongs = _dungeonSongsFM;
+			SunnySongs = _sunnySongsFM;
+			CloudySongs = _cloudySongsFM;
+			OvercastSongs = _overcastSongsFM;
+			RainSongs = _weatherRainSongsFM;
+			SnowSongs = _weatherSnowSongsFM;
+			TempleSongs = _templeSongsFM;
+			TavernSongs = _tavernSongsFM;
+			NightSongs = _nightSongsFM;
+			ShopSongs = _shopSongsFM;
+			MagesGuildSongs = _magesGuildSongsFM;
+			InteriorSongs = _interiorSongsFM;
+			PalaceSongs = _palaceSongsFM;
+			CastleSongs = _castleSongsFM;
+			CourtSongs = _courtSongsFM;
+			SneakingSongs = _sneakingSongsFM;
+		}
+		PlayerEnterExit.OnTransitionInterior += OnTransitionInterior;
+		PlayerEnterExit.OnTransitionExterior += OnTransitionExterior;
+		PlayerEnterExit.OnTransitionDungeonInterior += OnTransitionDungeonInterior;
+		PlayerEnterExit.OnTransitionDungeonExterior += OnTransitionDungeonExterior;
+		((DaggerfallEntity)playerEntity).OnDeath += OnDeath;
+		guiStyle = new GUIStyle();
+		guiStyle.normal.textColor = Color.black;
+		Debug.Log((object)"Dynamic Music initialized.");
+		mod.IsReady = true;
+	}
+
+	private void Update()
+	{
+		float realtimeSinceStartup = Time.realtimeSinceStartup;
+		deltaTime = realtimeSinceStartup - previousTimeSinceStartup;
+		previousTimeSinceStartup = realtimeSinceStartup;
+		if (deltaTime < 0f)
+		{
+			deltaTime = 0f;
+		}
+		if (isPlayingSting && dynamicSongPlayer.IsStoppedClip && dynamicSongPlayer.IsStinging)
+		{
+			dynamicSongPlayer.IsStinging = false;
+			isPlayingSting = false;
+			currentState = State.FadingOut;
+			fadeOutTime = 2f;
+		}
+		int num = currentPlaylist;
+		if (!isPlayingSting && (!isInCombat || customPlaylists[num] == null || customPlaylists[num].HasFlags(Playlist.Flags.PlayUntilCombatEnd)))
+		{
+			currentPlaylist = (int)GetMusicPlaylist(localPlayerGPS, playerEnterExit, playerWeather);
+			if (currentPlaylist != 17)
+			{
+				int userDefinedPlaylistKey = GetUserDefinedPlaylistKey(userDefinedConditionSets);
+				if (userDefinedPlaylistKey >= 0)
+				{
+					currentPlaylist = userDefinedPlaylistKey;
+					isPlayingSting = customPlaylists[currentPlaylist].HasFlags(Playlist.Flags.Sting);
+				}
+			}
+		}
+		if (stingWaitTime > 0f)
+		{
+			stingWaitTime -= deltaTime;
+		}
+		else
+		{
+			isWaitingForTravelSting = false;
+		}
+		switch (currentState)
+		{
+		case State.Normal:
+			if (currentPlaylist != num && num != 17)
+			{
+				if (customPlaylists[currentPlaylist] != null && customPlaylists[currentPlaylist].HasFlags(Playlist.Flags.CrashIn))
+				{
+					currentState = State.FadingOut;
+					fadeOutTime = 2f;
+					fadeInTime = 2f;
+					if (customPlaylists[currentPlaylist].HasFlags(Playlist.Flags.ResumePrevious))
+					{
+						resumePlaylist = num;
+					}
+				}
+				else
+				{
+					currentState = State.FadingOut;
+				}
+			}
+			if (currentState != State.FadingOut && customPlaylists[currentPlaylist] != null && customPlaylists[currentPlaylist].HasFlags(Playlist.Flags.Sting) && !dynamicSongPlayer.IsStinging)
+			{
+				PlayCurrentTrack();
+				dynamicSongPlayer.IsStinging = true;
+			}
+			if (currentPlaylist == 17)
+			{
+				if (dynamicSongPlayer.IsPlaying)
+				{
+					currentCustomTrack = string.Empty;
+					dynamicSongPlayer.Stop();
+				}
+			}
+			else
+			{
+				dynamicSongPlayer.AudioSource.volume = DaggerfallUnity.Settings.MusicVolume;
+			}
+			break;
+		case State.FadingOut:
+			fadeOutTime += deltaTime;
+			dynamicSongPlayer.AudioSource.volume = Mathf.Lerp(DaggerfallUnity.Settings.MusicVolume, 0f, fadeOutTime / 2f);
+			if (fadeOutTime >= 2f)
+			{
+				fadeOutTime = 0f;
+				currentState = State.FadingIn;
+			}
+			break;
+		case State.FadingIn:
+			if (currentPlaylist != num && num != 17)
+			{
+				if (customPlaylists[currentPlaylist] != null && customPlaylists[currentPlaylist].HasFlags(Playlist.Flags.CrashIn))
+				{
+					currentState = State.FadingOut;
+					fadeOutTime = 2f;
+					fadeInTime = 2f;
+				}
+				else
+				{
+					currentState = State.FadingOut;
+					fadeInTime = 0f;
+				}
+				break;
+			}
+			if (customPlaylists[currentPlaylist] != null && customPlaylists[currentPlaylist].HasFlags(Playlist.Flags.Sting))
+			{
+				fadeInTime = 2f;
+			}
+			if (currentPlaylist != 17)
+			{
+				if (dynamicSongPlayer.AudioSource.volume == 0f)
+				{
+					PlayCurrentTrack();
+				}
+				fadeInTime += deltaTime;
+				if (fadeInTime >= 2f)
+				{
+					fadeInTime = 0f;
+					currentState = State.Normal;
+					dynamicSongPlayer.AudioSource.volume = DaggerfallUnity.Settings.MusicVolume;
+				}
+				else
+				{
+					dynamicSongPlayer.AudioSource.volume = Mathf.Lerp(0f, DaggerfallUnity.Settings.MusicVolume, fadeInTime / 2f);
+				}
+			}
+			break;
+		}
+		detectionCheckDelta += Time.deltaTime;
+		if (detectionCheckDelta < 3f)
+		{
+			return;
+		}
+		if (currentState == State.Normal)
+		{
+			if (combatMusicIsEnabled && !gameManager.PlayerDeath.DeathInProgress && !playerEntity.Arrested && GetCombatStatus(out maxEnemyLevel))
+			{
+				isInCombat = true;
+				combatTaper = 2;
+			}
+			else if (combatTaper == 0 || --combatTaper <= 0)
+			{
+				isInCombat = false;
+			}
+		}
+		detectionCheckDelta = 0f;
+	}
+
+	private void OnGUI()
+	{
+		if (DefaultCommands.showDebugStrings || (currentState == State.Normal && dynamicSongPlayer.IsImported && dynamicSongPlayer.IsAudioSourcePlaying && dynamicSongPlayer.AudioSource.clip != null && !(dynamicSongPlayer.AudioSource.clip.length - dynamicSongPlayer.AudioSource.time > 2f)))
+		{
+			resumeSeeker = 0f;
+			customTrackQueued = true;
+			loopCustomTracks = false;
+			currentState = State.FadingOut;
+			fadeOutTime = 0f;
+			DefaultCommands.showDebugStrings = false;
+		}
+	}
+
+	private bool GetIsConditionTrue(ConditionUsage.Conditions condition, bool negate, int[] parameters)
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Invalid comparison between Unknown and I4
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Invalid comparison between Unknown and I4
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0077: Invalid comparison between Unknown and I4
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Invalid comparison between Unknown and I4
+		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cd: Invalid comparison between Unknown and I4
+		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012a: Invalid comparison between Unknown and I4
+		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016f: Invalid comparison between Unknown and I4
 __DFAMP_CONTINUE__
