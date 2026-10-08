@@ -1,0 +1,34 @@
+{
+  "Version": "v1",
+  "Sections": [
+    {
+      "Name": "Options",
+      "Description": null,
+      "IsAdvanced": false,
+      "Keys": [
+        {
+          "Value": true,
+          "Name": "Enable Combat Music",
+          "Description": "Play selection from combat playlist when in combat.",
+          "$version": "v1",
+          "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+        },
+        {
+          "Value": true,
+          "Name": "Enable Track Resume",
+          "Description": "Resume last track after combat end (requires combat music enabled).",
+          "$version": "v1",
+          "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+        },
+        {
+          "Value": false,
+          "Name": "Loop Custom Tracks",
+          "Description": "Loop one random track when a custom playlist is chosen.",
+          "$version": "v1",
+          "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+        }
+      ],
+      "$version": "v1"
+    }
+  ]
+}
