@@ -1,0 +1,15 @@
+{
+  "ModTitle": "DF-AMP",
+  "ModVersion": "2.4.18-DFAMP-T01",
+  "ModAuthor": "numidium3rd (Dynamic Music) + DF-AMP experimental integration",
+  "ContactInfo": "Original Dynamic Music: https://www.nexusmods.com/daggerfallunity/mods/425",
+  "DFUnity_Version": "1.1.1",
+  "ModDescription": "DF-AMP experimental integration, based on Dynamic Music by numidium3rd. Adds an on-screen player interface while preserving the Dynamic Music playback engine.",
+  "GUID": "ce40a69d-75b8-4563-ae76-dcd60d72389b",
+  "Files": [
+    "Assets/Game/Mods/DynamicMusic/Scripts/DynamicMusic.cs",
+    "Assets/Game/Mods/DynamicMusic/DynamicMusic.dfmod.json",
+    "Assets/Game/Mods/DynamicMusic/Scripts/DynamicSongPlayer.cs",
+    "Assets/Game/Mods/DynamicMusic/modsettings.json"
+  ]
+}
