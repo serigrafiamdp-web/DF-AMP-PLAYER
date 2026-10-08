@@ -16,8 +16,8 @@ This is an independent derived project. It does not modify the original Dynamic 
 
 ## Current validated baseline
 
-**MASTER_DFAMP_09G_07_OCT_2026.zip** — PASS
+**MASTER_DFAMP_10_ESC_ONLY_08_OCT_2026.zip** — PASS
 
-SHA-256: `c358dfff4b8e8ac8304df1c0acea6c5d78f184a1d8c2df8b384fc3414664a90f`
+Promoted from **DF-AMP_UI_TEST_10_ESC_ONLY = PASS**. ENTER is free for normal game use; DF-AMP appears only with the native ESC menu.
 
 The project uses a PASS/FAIL workflow. New development should branch from the latest validated master.
