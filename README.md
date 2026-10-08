@@ -20,4 +20,6 @@ This is an independent derived project. It does not modify the original Dynamic 
 
 Promoted from **DF-AMP_UI_TEST_10_ESC_ONLY = PASS**. ENTER is free for normal game use; DF-AMP appears only with the native ESC menu.
 
+MASTER ZIP SHA-256: `dfdf6f1555ffd178e0857601f6900b35a4fa174742e7580f49256b429f9c8168`
+
 The project uses a PASS/FAIL workflow. New development should branch from the latest validated master.
