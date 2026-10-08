@@ -1,0 +1,46 @@
+name: Decompile DF-AMP Core
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/decompile-core.yml"
+
+jobs:
+  decompile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout decompile input from dfamp-dev
+        uses: actions/checkout@v4
+        with:
+          ref: dfamp-dev
+
+      - name: Rebuild exact core DLL
+        shell: bash
+        run: |
+          mkdir -p work
+          cat tools/decompile/input/core_b64_*.txt | base64 -d > work/DF-AMP_Core.dll
+          echo "01dd2d8df9900b8a4fe54ceb0698bd1ad00966e8e30fe11fccdc6803e7d7734a  work/DF-AMP_Core.dll" | sha256sum -c -
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Install ILSpy command line
+        shell: bash
+        run: dotnet tool install --global ilspycmd --version 11.1.0.9782
+
+      - name: Decompile core
+        shell: bash
+        run: |
+          mkdir -p decompiled
+          ~/.dotnet/tools/ilspycmd -p -o decompiled work/DF-AMP_Core.dll
+
+      - name: Upload decompiled source
+        uses: actions/upload-artifact@v4
+        with:
+          name: dfamp-core-decompiled
+          path: decompiled/
+          if-no-files-found: error
