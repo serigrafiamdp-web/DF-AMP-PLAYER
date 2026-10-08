@@ -9,8 +9,22 @@ Original upstream source:
 - Daggerfall Unity target: 1.1.1
 - Upstream license: MIT
 
-The current validated DF-AMP runtime core is stored in `DF-AMP.dfmod` inside **MASTER_DFAMP_09G_07_OCT_2026.zip**.
+## Current MASTER 09G source
 
-At the time this repository was initialized, the current binary core had already been built and validated before source control was introduced. The exact runtime behavior is therefore treated as the canonical contract and is documented in `docs/PROJECT_STATE.md` and `docs/MASTER_09G_MANIFEST.md`.
+The exact compiled .NET core embedded inside the validated `DF-AMP.dfmod` from **MASTER_DFAMP_09G_07_OCT_2026.zip** was extracted and independently verified.
 
-Future source changes should be committed here before building new runtime binaries.
+Embedded core assembly SHA-256:
+
+`01dd2d8df9900b8a4fe54ceb0698bd1ad00966e8e30fe11fccdc6803e7d7734a`
+
+That exact assembly was decompiled with ILSpy 11.1 and its recovered C# is archived here:
+
+- `DynamicMusic.cs`
+- `DynamicSongPlayer.cs`
+- `DECOMPILATION.md`
+
+The compiled assembly remains the byte-level authority for MASTER 09G. Decompiled C# preserves program semantics, but original source comments, formatting, and some local variable names cannot be recovered without the original source/PDB.
+
+The untouched upstream Dynamic Music source is separately preserved under `upstream/DynamicMusic/` for provenance and comparison.
+
+Future DF-AMP source changes should be committed before building new runtime binaries.
