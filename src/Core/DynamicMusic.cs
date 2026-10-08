@@ -799,4 +799,404 @@ public sealed class DynamicMusic : MonoBehaviour
 		//IL_012a: Invalid comparison between Unknown and I4
 		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016f: Invalid comparison between Unknown and I4
+		//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b4: Invalid comparison between Unknown and I4
+		//IL_01f6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fc: Invalid comparison between Unknown and I4
+		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0147: Invalid comparison between Unknown and I4
+		//IL_0241: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0247: Invalid comparison between Unknown and I4
+		//IL_0185: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018c: Invalid comparison between Unknown and I4
+		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0102: Invalid comparison between Unknown and I4
+		//IL_0287: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028d: Invalid comparison between Unknown and I4
+		//IL_02cd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d3: Invalid comparison between Unknown and I4
+		//IL_0212: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0217: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021e: Invalid comparison between Unknown and I4
+		//IL_0333: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0339: Invalid comparison between Unknown and I4
+		//IL_037e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0384: Invalid comparison between Unknown and I4
+		//IL_03ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03d4: Invalid comparison between Unknown and I4
+		//IL_041d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0423: Invalid comparison between Unknown and I4
+		//IL_034f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0301: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0306: Unknown result type (might be due to invalid IL or missing references)
+		//IL_030d: Invalid comparison between Unknown and I4
+		//IL_043b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0441: Invalid comparison between Unknown and I4
+		//IL_03a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03ab: Invalid comparison between Unknown and I4
+		//IL_0485: Unknown result type (might be due to invalid IL or missing references)
+		//IL_048b: Invalid comparison between Unknown and I4
+		//IL_04b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04b9: Invalid comparison between Unknown and I4
+		//IL_04db: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ec: Invalid comparison between Unknown and I4
+		//IL_0517: Unknown result type (might be due to invalid IL or missing references)
+		//IL_051c: Unknown result type (might be due to invalid IL or missing references)
+		bool flag = false;
+		switch (condition)
+		{
+		case ConditionUsage.Conditions.Night:
+			flag = (int)gameManager.StateManager.CurrentState != 2 && daggerfallUnity.WorldTime.Now.IsNight;
+			break;
+		case ConditionUsage.Conditions.Interior:
+			flag = (int)gameManager.StateManager.CurrentState != 2 && playerEnterExit.IsPlayerInside;
+			break;
+		case ConditionUsage.Conditions.Dungeon:
+			flag = (int)gameManager.StateManager.CurrentState != 2 && playerEnterExit.IsPlayerInsideDungeon;
+			break;
+		case ConditionUsage.Conditions.DungeonCastle:
+			flag = (int)gameManager.StateManager.CurrentState != 2 && playerEnterExit.IsPlayerInsideDungeonCastle;
+			break;
+		case ConditionUsage.Conditions.LocationType:
+		{
+			if ((int)gameManager.StateManager.CurrentState == 2 || playerEnterExit.IsPlayerInsideDungeon || !localPlayerGPS.IsPlayerInLocationRect)
+			{
+				return false;
+			}
+			int[] array = parameters;
+			foreach (int num in array)
+			{
+				flag |= (int)localPlayerGPS.CurrentLocationType == num;
+			}
+			break;
+		}
+		case ConditionUsage.Conditions.BuildingType:
+		{
+			if ((int)gameManager.StateManager.CurrentState == 2)
+			{
+				return false;
+			}
+			int[] array = parameters;
+			foreach (int num7 in array)
+			{
+				flag |= (int)playerEnterExit.BuildingType == num7;
+			}
+			break;
+		}
+		case ConditionUsage.Conditions.WeatherType:
+		{
+			if ((int)gameManager.StateManager.CurrentState == 2)
+			{
+				return false;
+			}
+			int[] array = parameters;
+			foreach (int num8 in array)
+			{
+				flag |= (int)playerWeather.WeatherType == num8;
+			}
+			break;
+		}
+		case ConditionUsage.Conditions.FactionId:
+		{
+			if ((int)gameManager.StateManager.CurrentState == 2)
+			{
+				return false;
+			}
+			int[] array = parameters;
+			foreach (int num4 in array)
+			{
+				flag |= playerEnterExit.FactionID == num4;
+			}
+			break;
+		}
+		case ConditionUsage.Conditions.Climate:
+		{
+			if ((int)gameManager.StateManager.CurrentState == 2)
+			{
+				return false;
+			}
+			int[] array = parameters;
+			foreach (int num10 in array)
+			{
+				flag |= (int)localPlayerGPS.ClimateSettings.ClimateType == num10;
+			}
+			break;
+		}
+		case ConditionUsage.Conditions.ClimateIndex:
+		{
+			if ((int)gameManager.StateManager.CurrentState == 2)
+			{
+				return false;
+			}
+			int[] array = parameters;
+			foreach (int num6 in array)
+			{
+				flag |= localPlayerGPS.CurrentClimateIndex == num6;
+			}
+			break;
+		}
+		case ConditionUsage.Conditions.RegionIndex:
+		{
+			if ((int)gameManager.StateManager.CurrentState == 2)
+			{
+				return false;
+			}
+			int[] array = parameters;
+			foreach (int num2 in array)
+			{
+				flag |= localPlayerGPS.CurrentRegionIndex == num2;
+			}
+			break;
+		}
+		case ConditionUsage.Conditions.DungeonType:
+		{
+			if ((int)gameManager.StateManager.CurrentState == 2)
+			{
+				return false;
+			}
+			int[] array = parameters;
+			foreach (int num9 in array)
+			{
+				flag |= (Object)(object)playerEnterExit.Dungeon != (Object)null && (int)playerEnterExit.Dungeon.Summary.DungeonType == num9;
+			}
+			break;
+		}
+		case ConditionUsage.Conditions.BuildingQuality:
+		{
+			if ((int)gameManager.StateManager.CurrentState == 2)
+			{
+				return false;
+			}
+			int[] array = parameters;
+			foreach (int num5 in array)
+			{
+				flag |= playerEnterExit.BuildingDiscoveryData.quality == num5;
+			}
+			break;
+		}
+		case ConditionUsage.Conditions.Season:
+		{
+			if ((int)gameManager.StateManager.CurrentState == 2)
+			{
+				return false;
+			}
+			int[] array = parameters;
+			foreach (int num3 in array)
+			{
+				flag |= (int)gameManager.StreamingWorld.CurrentPlayerLocationObject.CurrentSeason == num3;
+			}
+			break;
+		}
+		case ConditionUsage.Conditions.Month:
+		{
+			if ((int)gameManager.StateManager.CurrentState == 2)
+			{
+				return false;
+			}
+			int[] array = parameters;
+			foreach (int num11 in array)
+			{
+				flag |= DaggerfallUnity.Instance.WorldTime.DaggerfallDateTime.MonthOfYear == num11;
+			}
+			break;
+		}
+		case ConditionUsage.Conditions.StartMenu:
+			flag = (int)gameManager.StateManager.CurrentState == 2;
+			break;
+		case ConditionUsage.Conditions.Combat:
+			if ((int)gameManager.StateManager.CurrentState == 2)
+			{
+				return false;
+			}
+			flag = isInCombat;
+			if (parameters.Length != 0)
+			{
+				flag &= maxEnemyLevel - ((DaggerfallEntity)playerEntity).Level >= parameters[0];
+			}
+			break;
+		case ConditionUsage.Conditions.Swimming:
+			if ((int)gameManager.StateManager.CurrentState == 2)
+			{
+				return false;
+			}
+			flag = playerEnterExit.IsPlayerSwimming;
+			break;
+		case ConditionUsage.Conditions.BuildingIsOpen:
+			if ((int)gameManager.StateManager.CurrentState == 2)
+			{
+				return false;
+			}
+			flag = ((Object)(object)playerEnterExit.Interior != (Object)null && (int)playerEnterExit.Interior.BuildingData.BuildingType >= PlayerActivate.openHours.Length) || (playerEnterExit.IsPlayerInside && !playerEnterExit.IsPlayerInsideDungeon && PlayerActivate.IsBuildingOpen(playerEnterExit.Interior.BuildingData.BuildingType));
+			break;
+		case ConditionUsage.Conditions.FastTraveled:
+			flag = isWaitingForTravelSting;
+			break;
+		}
+		if (!negate)
+		{
+			return flag;
+		}
+		return !flag;
+	}
+
+	private int GetUserDefinedPlaylistKey(Dictionary<int, ConditionUsage[]> conditionSets)
+	{
+		foreach (int key in conditionSets.Keys)
+		{
+			bool flag = true;
+			ConditionUsage[] array = conditionSets[key];
+			foreach (ConditionUsage conditionUsage in array)
+			{
+				flag &= GetIsConditionTrue(conditionUsage.Condition, conditionUsage.NegateArg, conditionUsage.ParameterArgs);
+				if (!flag)
+				{
+					break;
+				}
+			}
+			if (flag)
+			{
+				return key;
+			}
+		}
+		return -1;
+	}
+
+	private void PrintParserError(string text, ushort lineNumber, string token)
+	{
+		Debug.Log((object)string.Format("{0} user-defined playlist: {1} at line {2}: {3}", new object[4] { "Dynamic Music", text, lineNumber, token }));
+	}
+
+	private void HandleLocationChange()
+	{
+		combatTaper = 0;
+	}
+
+	private void PlayCurrentTrack()
+	{
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0230: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
+		uint num = daggerfallUnity.WorldTime.DaggerfallDateTime.ToClassicDaggerfallTime() / 1440;
+		SongFiles song = dynamicSongPlayer.Song;
+		int num2 = ((customPlaylists[currentPlaylist] != null) ? currentPlaylist : 17);
+		bool flag = num2 != 17;
+		if (flag && (currentCustomTrack != customPlaylists[currentPlaylist].CurrentTrack || customTrackQueued))
+		{
+			Playlist playlist = customPlaylists[num2];
+			string track = ((resumeSeeker > 0f || (false && currentCustomTrack == customPlaylists[currentPlaylist].CurrentTrack)) ? playlist.CurrentTrack : playlist.GetNextTrack());
+			GetDebuggingText(track, out debugPlaylistName, out debugSongName, currentPlaylist > 17);
+			if (resumeIsEnabled && customPlaylists[currentPlaylist].HasFlags(Playlist.Flags.ResumePrevious))
+			{
+				resumeSeeker = dynamicSongPlayer.CurrentSecond;
+				dynamicSongPlayer.Play(track);
+			}
+			else
+			{
+				if (num2 != resumePlaylist)
+				{
+					resumeSeeker = 0f;
+				}
+				dynamicSongPlayer.Play(track, resumeSeeker);
+				resumeSeeker = 0f;
+			}
+			currentCustomTrack = playlist.CurrentTrack;
+			dynamicSongPlayer.Song = (SongFiles)(-1);
+			lastVanillaPlaylist = MusicPlaylist.None;
+			customTrackQueued = false;
+		}
+		else if (num2 == 17)
+		{
+			if (num != lastGameDays || localPlayerGPS.CurrentLocationIndex != lastlocationIndex || (int)lastVanillaPlaylist != currentPlaylist)
+			{
+				song = GetSong((MusicPlaylist)currentPlaylist);
+			}
+			if (song == dynamicSongPlayer.Song)
+			{
+				lastGameDays = num;
+				lastlocationIndex = localPlayerGPS.CurrentLocationIndex;
+				lastVanillaPlaylist = (MusicPlaylist)currentPlaylist;
+				return;
+			}
+			GetDebuggingText(song, out debugPlaylistName, out debugSongName);
+			if (currentPlaylist != resumePlaylist)
+			{
+				resumeSeeker = 0f;
+			}
+			dynamicSongPlayer.Play(song, resumeSeeker);
+			resumeSeeker = 0f;
+			currentCustomTrack = string.Empty;
+		}
+		if (flag && dynamicSongPlayer.IsStoppedClip)
+		{
+			customTrackQueued = true;
+		}
+		lastGameDays = num;
+		lastlocationIndex = localPlayerGPS.CurrentLocationIndex;
+		lastVanillaPlaylist = (MusicPlaylist)currentPlaylist;
+	}
+
+	private MusicPlaylist GetMusicPlaylist(PlayerGPS localPlayerGPS, PlayerEnterExit playerEnterExit, PlayerWeather playerWeather)
+	{
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Invalid comparison between Unknown and I4
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ff: Expected I4, but got Unknown
+		//IL_014d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0152: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0154: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019f: Expected I4, but got Unknown
+		//IL_01e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020d: Expected I4, but got Unknown
+		DaggerfallUnity instance = DaggerfallUnity.Instance;
+		IUserInterfaceWindow topWindow = DaggerfallUI.UIManager.TopWindow;
+		if ((int)gameManager.StateManager.CurrentState == 2 && !(topWindow is DaggerfallVidPlayerWindow) && !(topWindow is DaggerfallHUD))
+		{
+			if (topWindow is DaggerfallStartWindow || topWindow is DaggerfallUnitySaveGameWindow || (topWindow is DaggerfallPopupWindow && ((DaggerfallPopupWindow)((topWindow is DaggerfallPopupWindow) ? topWindow : null)).PreviousWindow is DaggerfallUnitySaveGameWindow) || topWindow is DaggerfallLoadClassicGameWindow)
+			{
+				return MusicPlaylist.MainMenu;
+			}
+			return MusicPlaylist.CharCreation;
+		}
+		if (!gameLoaded || !Object.op_Implicit((Object)(object)playerEnterExit) || !Object.op_Implicit((Object)(object)localPlayerGPS) || !Object.op_Implicit((Object)(object)instance) || topWindow is DaggerfallVidPlayerWindow)
+		{
+			return MusicPlaylist.None;
+		}
+		if (playerEntity.Arrested)
+		{
+			return MusicPlaylist.Court;
+		}
+		MusicEnvironment musicEnvironment = MusicEnvironment.Wilderness;
+		if (!playerEnterExit.IsPlayerInside)
+		{
+			if (localPlayerGPS.IsPlayerInLocationRect)
+			{
+				LocationTypes currentLocationType = localPlayerGPS.CurrentLocationType;
+				switch ((int)currentLocationType)
+				{
+				case 4:
+				case 7:
+				case 10:
+				case 11:
+				case 13:
+					musicEnvironment = MusicEnvironment.DungeonExterior;
+					break;
+				case 12:
+					musicEnvironment = MusicEnvironment.Graveyard;
+					break;
+				case 0:
+				case 1:
+				case 2:
+				case 3:
 __DFAMP_CONTINUE__
