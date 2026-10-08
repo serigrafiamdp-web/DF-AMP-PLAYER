@@ -46,3 +46,13 @@ Runtime validation passed for all five checks:
 3. ESC or Continue closes the menu and DF-AMP.
 4. NEXT still advances one track with the existing fade behavior.
 5. Fast Travel behavior remains identical to MASTER 09G.
+
+
+## Promotion
+
+Promoted to:
+
+`MASTER_DFAMP_10_ESC_ONLY_08_OCT_2026.zip`
+
+- MASTER ZIP SHA-256: `dfdf6f1555ffd178e0857601f6900b35a4fa174742e7580f49256b429f9c8168`
+- MASTER runtime `DF-AMP UI.dfmod` SHA-256: `669ea54b953bb0300813569b3de3eadd2921fc37aad43e59a5e1c99021e3253b`
