@@ -18,8 +18,8 @@ This is an independent derived project. It does not modify the original Dynamic 
 
 **MASTER_DFAMP_11B_CONTROLS_HIDE_SAFE_08_OCT_2026.zip** — PASS
 
-Promoted from **DF-AMP_UI_TEST_10_ESC_ONLY = PASS**. ENTER is free for normal game use; DF-AMP appears only with the native ESC menu.
+Promoted from **DF-AMP_UI_TEST_11B_CONTROLS_HIDE_SAFE = PASS**. ENTER remains free; DF-AMP appears with ESC and hides while the Controls submenu is open.
 
-MASTER ZIP SHA-256: `dfdf6f1555ffd178e0857601f6900b35a4fa174742e7580f49256b429f9c8168`
+MASTER ZIP SHA-256: `dd9d956860feeb1343e8d812f57354b34ce8a8d3c930cfea7a6c63aef6eebf47`
 
 The project uses a PASS/FAIL workflow. New development should branch from the latest validated master.
