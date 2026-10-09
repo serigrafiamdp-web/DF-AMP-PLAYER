@@ -16,7 +16,7 @@ This is an independent derived project. It does not modify the original Dynamic 
 
 ## Current validated baseline
 
-**MASTER_DFAMP_10_ESC_ONLY_08_OCT_2026.zip** — PASS
+**MASTER_DFAMP_11B_CONTROLS_HIDE_SAFE_08_OCT_2026.zip** — PASS
 
 Promoted from **DF-AMP_UI_TEST_10_ESC_ONLY = PASS**. ENTER is free for normal game use; DF-AMP appears only with the native ESC menu.
 
