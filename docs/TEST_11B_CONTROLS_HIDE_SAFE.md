@@ -1,6 +1,6 @@
 # DF-AMP UI TEST 11B — CONTROLS HIDE SAFE
 
-Status: **PENDING PASS/FAIL**
+Status: **PASS**
 
 Base: **MASTER_DFAMP_10_ESC_ONLY_08_OCT_2026 = PASS**
 
@@ -64,3 +64,18 @@ PASS only if:
 4. Returning from Controls shows DF-AMP again.
 5. ENTER remains free.
 6. NEXT and Fast Travel remain unchanged.
+
+
+## Promotion
+
+Promoted to:
+
+`MASTER_DFAMP_11B_CONTROLS_HIDE_SAFE_08_OCT_2026.zip`
+
+- MASTER ZIP SHA-256: `dd9d956860feeb1343e8d812f57354b34ce8a8d3c930cfea7a6c63aef6eebf47`
+- `DF-AMP UI.dfmod` SHA-256: `9eebd1aa61178130cdda0d02822f9875c186416c88892a428fe382ac396d19c0`
+
+Runtime confirmed by the user:
+- DFU starts normally.
+- ESC shows DF-AMP.
+- Controls hides DF-AMP.
